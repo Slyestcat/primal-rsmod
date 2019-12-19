@@ -5012,7 +5012,7 @@ object Npcs {
     const val ELF_WARRIOR_5295 = 5295
     const val ELF_WARRIOR_5296 = 5296
     const val GOREU = 5297
-    const val YSGAWYN = 5298
+    //const val YSGAWYN = 5298
     const val ARVEL = 5299
     const val MAWRTH = 5300
     const val KELYN = 5301

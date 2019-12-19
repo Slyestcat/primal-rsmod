@@ -31,6 +31,8 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk15on:$bouncycastleVersion"
 
     testImplementation "junit:junit:$junitVersion"
+
+    runtime files('lib/mysql-connector-java-5.1.40.jar')
 }
 
 sourceSets {

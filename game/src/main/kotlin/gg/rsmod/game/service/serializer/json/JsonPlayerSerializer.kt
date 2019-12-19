@@ -21,7 +21,9 @@ import org.mindrot.jbcrypt.BCrypt
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Arrays
+import java.sql.*
+import java.util.*
+
 
 /**
  * A [PlayerSerializerService] implementation that decodes and encodes player
@@ -125,7 +127,31 @@ class JsonPlayerSerializer : PlayerSerializerService() {
             return PlayerLoadResult.MALFORMED
         }
     }
+    private var conn: Connection? = null
 
+    fun getConnection() {
+        val databaseUsername = "account_svc"
+        val databasePassword = "k_?bHvv327!vG=,<"
+        //val databaseIP = "jdbc:mysql://165.22.134.196:3306/account_svc"
+        val connectionProps = Properties()
+        connectionProps["user"] = databaseUsername
+        connectionProps["password"] = databasePassword
+        try {
+            Class.forName("com.mysql.jdbc.Driver")
+            conn = DriverManager.getConnection(
+                    "jdbc:" + "mysql" + "://" +
+                            "165.22.134.196" +
+                            ":" + "3306" + "/" +
+                            "account_svc",
+                    connectionProps)
+        } catch (ex: SQLException) {
+            // handle any errors
+            ex.printStackTrace()
+        } catch (ex: Exception) {
+            // handle any errors
+            ex.printStackTrace()
+        }
+    }
     override fun saveClientData(client: Client): Boolean {
         val data = JsonPlayerSaveData(passwordHash = client.passwordHash, username = client.loginUsername, previousXteas = client.currentXteaKeys,
                 displayName = client.username, x = client.tile.x, z = client.tile.z, height = client.tile.height,
@@ -137,6 +163,66 @@ class JsonPlayerSerializer : PlayerSerializerService() {
         val json = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
         json.toJson(data, writer)
         writer.close()
+
+
+        val passwordHash = client.passwordHash
+        val username = client.loginUsername
+        val previousXteas = client.currentXteaKeys
+        val displayName = client.username
+        val x  = client.tile.x
+        val z = client.tile.z
+        val height = client.tile.height
+        val privilege = client.privilege.id
+        val runEnergy = client.runEnergy
+        val displayMode = client.interfaces.displayMode.id
+        val appearance = client.getPersistentAppearance()
+
+
+
+        val string = "INSERT OVERWRITE INTO account (passwordHash, username, previousXteas, displayName, x, z," +
+                " height, runEnergy, displayMode, privilege)" +
+                " VALUES ($passwordHash, $username, $previousXteas, $displayName, $x, $z, " +
+                "$height, $runEnergy, $displayMode, $privilege)"
+        println(string)
+        getConnection()
+        var stmt: Statement? = null
+        var resultset: ResultSet? = null
+        try {
+            stmt = conn!!.createStatement()
+            resultset = stmt!!.executeQuery(string)
+            if (stmt.execute(string)) {
+                resultset = stmt.resultSet
+            }
+            while (resultset!!.next()) {
+                println(resultset.getString("Database"))
+            }
+        } catch (ex: SQLException) {
+            // handle any errors
+            ex.printStackTrace()
+        } finally {
+            // release resources
+            if (resultset != null) {
+                try {
+                    resultset.close()
+                } catch (sqlEx: SQLException) {
+                }
+                resultset = null
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close()
+                } catch (sqlEx: SQLException) {
+                }
+                stmt = null
+            }
+            if (conn != null) {
+                try {
+                    conn!!.close()
+                } catch (sqlEx: SQLException) {
+                }
+                conn = null
+            }
+        }
         return true
     }
 
