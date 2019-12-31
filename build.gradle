@@ -19,6 +19,7 @@ allprojects {
         jcenter()
         maven { url "https://repo.maven.apache.org/maven2" }
         maven { url 'https://jitpack.io' }
+        maven { url  "https://dl.bintray.com/patrickfav/maven" }
     }
 
     configurations {
@@ -28,18 +29,21 @@ allprojects {
     dependencies {
         ktlint "com.github.shyiko:ktlint:0.15.0"
 
-
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
         compile "org.slf4j:slf4j-api:$slf4jVersion"
         compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
         compile "io.github.microutils:kotlin-logging:$kloggingVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$yamlVersion"
+        compile 'at.favre.lib:bcrypt:0.9.0'
+
 
         implementation "org.mindrot:jbcrypt:$bcryptVersion"
         implementation "com.google.code.gson:gson:$gsonVersion"
         implementation "com.github.runelite.runelite:cache:$runeliteVersion"
         implementation "io.netty:netty-all:$nettyVersion"
+        implementation "mysql:mysql-connector-java:5.1.40"
+        implementation group: 'at.favre.lib', name: 'bcrypt', version: '{latest-version}'
 
         testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 

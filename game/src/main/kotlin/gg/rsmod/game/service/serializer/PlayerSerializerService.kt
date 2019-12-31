@@ -1,5 +1,6 @@
 package gg.rsmod.game.service.serializer
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import gg.rsmod.game.Server
 import gg.rsmod.game.model.Tile
 import gg.rsmod.game.model.World
@@ -8,7 +9,6 @@ import gg.rsmod.game.model.entity.Client
 import gg.rsmod.game.service.Service
 import gg.rsmod.net.codec.login.LoginRequest
 import gg.rsmod.util.ServerProperties
-import org.mindrot.jbcrypt.BCrypt
 
 /**
  * A [Service] that is responsible for encoding and decoding player data.
@@ -34,9 +34,9 @@ abstract class PlayerSerializerService : Service {
     }
 
     fun configureNewPlayer(client: Client, request: LoginRequest) {
-        client.attr.put(NEW_ACCOUNT_ATTR, true)
+        client.attr.put(NEW_ACCOUNT_ATTR, true) //TODO force account creation on the website, need to configure the website to accept the same password scheme. Maybe IPB forums?
 
-        client.passwordHash = BCrypt.hashpw(request.password, BCrypt.gensalt(16))
+        client.passwordHash = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(8, request.password.toCharArray())
         client.tile = startTile
     }
 
