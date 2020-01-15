@@ -1,5 +1,6 @@
 package gg.rsmod.plugins.content.items.ringofdueling
 
+import gg.rsmod.plugins.api.cfg.Items
 import gg.rsmod.plugins.content.magic.TeleportType
 import gg.rsmod.plugins.content.magic.canTeleport
 import gg.rsmod.plugins.content.magic.teleport
