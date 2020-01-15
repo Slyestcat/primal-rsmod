@@ -13,6 +13,7 @@ import gg.rsmod.game.model.container.key.ContainerKey
 import gg.rsmod.game.model.container.key.EQUIPMENT_KEY
 import gg.rsmod.game.model.container.key.INVENTORY_KEY
 import gg.rsmod.game.model.entity.*
+import gg.rsmod.game.model.npcdrops.NpcDropTableDef
 import gg.rsmod.game.model.shop.Shop
 import gg.rsmod.game.model.timer.TimerKey
 import gg.rsmod.game.service.Service
@@ -84,6 +85,8 @@ class PluginRepository(val world: World) {
      * being spawned into the world. Use sparingly.
      */
     private val globalNpcSpawnPlugins = mutableListOf<Plugin.() -> Unit>()
+
+    internal val npcDropTableDefs = Int2ObjectOpenHashMap<NpcDropTableDef>()
 
     /**
      * A list of plugins that will be executed upon an [gg.rsmod.game.model.entity.Npc]
@@ -183,6 +186,13 @@ class PluginRepository(val world: World) {
     private val componentItemSwapPlugins = Int2ObjectOpenHashMap<Plugin.() -> Unit>()
 
     private val componentToComponentItemSwapPlugins = Long2ObjectOpenHashMap<Plugin.() -> Unit>()
+
+    internal val onStartFishingPlugins = Int2ObjectOpenHashMap<Plugin.() -> Unit>()
+
+    /**
+     * A map of [Plugins] that are listening for fish to be caught.
+     */
+    internal val onCatchFishPlugins = Int2ObjectOpenHashMap<Plugin.() -> Unit>()
 
     /**
      * A map that contains any plugin that will be executed upon entering a new
@@ -330,6 +340,11 @@ class PluginRepository(val world: World) {
      * and is de-registered from the world.
      */
     private val npcDeathPlugins = Int2ObjectOpenHashMap<Plugin.() -> Unit>()
+    /**
+     * A list of plugins that will be invoked when an npc dies
+     * and is de-registered from the world.
+     */
+    private val npcDeathPlugins1 = hashMapOf<String, Plugin.() -> Unit>()
 
     /**
      * A map of plugins that occur when an [Event] is triggered.
@@ -587,11 +602,21 @@ class PluginRepository(val world: World) {
         npcDeathPlugins[npc] = plugin
     }
 
+    fun bindNpcDeath(npc: String, plugin: Plugin.() -> Unit) {
+        npcDeathPlugins1[npc.toLowerCase()] = plugin
+    }
+
     fun executeNpcDeath(npc: Npc) {
         npcDeathPlugins[npc.id]?.let { plugin ->
             npc.executePlugin(plugin)
         }
+
+        npcDeathPlugins1[npc.name]?.let { plugin1 ->
+            npc.executePlugin(plugin1)
+        }
     }
+
+
 
     fun bindSpellOnNpc(parent: Int, child: Int, plugin: Plugin.() -> Unit) {
         val hash = (parent shl 16) or child
@@ -1243,6 +1268,38 @@ class PluginRepository(val world: World) {
         return true
     }
 
+    fun bindOnStartFishing(npc_spot: Int, plugin: Plugin.() -> Unit) {
+        if(onStartFishingPlugins.containsKey(npc_spot)) {
+            val error = IllegalStateException("Start fishing listener already bound to a plugin: npc=$npc_spot")
+            logger.error(error) {}
+            throw error
+        }
+        onStartFishingPlugins[npc_spot] = plugin
+        pluginCount++
+    }
+
+    fun executeOnStartFishing(p: Player, npc_spot: Int): Boolean {
+        val plugin = onStartFishingPlugins[npc_spot] ?: return false
+        p.executePlugin(plugin)
+        return true
+    }
+
+    fun bindOnCatchFish(npc_spot: Int, plugin: Plugin.() -> Unit) {
+        if(onCatchFishPlugins.contains(npc_spot)) {
+            val error = IllegalStateException("Catch fish listener already bound to a plugin: npc=$npc_spot")
+            logger.error(error) {}
+            throw error
+        }
+        onCatchFishPlugins[npc_spot] = plugin
+        pluginCount++
+    }
+
+    fun executeOnCatchFish(p: Player, npc_spot: Int): Boolean {
+        val plugin = onCatchFishPlugins[npc_spot] ?: return false
+        p.executePlugin(plugin)
+        return true
+    }
+
     fun bindGlobalGroundItemPickUp(plugin: Plugin.() -> Unit) {
         globalGroundItemPickUp.add(plugin)
     }
@@ -1251,6 +1308,12 @@ class PluginRepository(val world: World) {
         globalGroundItemPickUp.forEach { plugin ->
             p.executePlugin(plugin)
         }
+    }
+
+    fun get_all_commands(): ArrayList<String> {
+        val str_list = ArrayList<String>()
+        commandPlugins.forEach { t, _ ->  str_list.add(t) }
+        return str_list
     }
 
     companion object : KLogging()

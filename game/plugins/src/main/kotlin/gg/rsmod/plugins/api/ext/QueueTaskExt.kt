@@ -30,6 +30,26 @@ private val closeDialog: QueueTask.() -> Unit = {
     player.closeComponent(parent = 162, child = CHATBOX_CHILD)
 }
 
+private val closeScrollableOptions: QueueTask.() -> Unit = {
+    player.closeInterface(interfaceId = 187)
+}
+
+
+suspend fun QueueTask.scrollableOptions(vararg options: String, title: String = "Select an Option"): Int {
+    player.runClientScript(2524,-1,-1)
+    player.openInterface(dest = InterfaceDestination.MAIN_SCREEN, interfaceId = 187)
+    player.runClientScript(217, title, options.joinToString("|"), 1)
+    player.setInterfaceEvents(interfaceId = 187, component = 3, range = 0..127, setting = 1)
+
+    terminateAction = closeScrollableOptions
+    waitReturnValue()
+    terminateAction!!(this)
+
+    return (requestReturnValue as? ResumePauseButtonMessage)?.slot ?: -1
+}
+
+
+
 /**
  * Invoked when input dialog queues are interrupted.
  */
@@ -362,8 +382,7 @@ suspend fun QueueTask.levelUpMessageBox(skill: Int, levelIncrement: Int) {
     terminateAction!!(this)
 }
 
-suspend fun QueueTask.produceItemBox(vararg items: Int, title: String = "What would you like to make?", maxItems: Int = player.inventory.capacity, logic: Player.(Int, Int) -> Unit) {
-    val defs = player.world.definitions
+suspend fun QueueTask.produceItemBox(vararg items: Int, type: Int = 0, title: String = "What would you like to make?", maxItems: Int = player.inventory.capacity, logic: Player.(Int, Int) -> Unit) {    val defs = player.world.definitions
     val itemDefs = items.map { defs.get(ItemDef::class.java, it) }
 
     val baseChild = 14
@@ -378,7 +397,7 @@ suspend fun QueueTask.produceItemBox(vararg items: Int, title: String = "What wo
 
     player.sendTempVarbit(5983, 1)
     player.openInterface(parent = 162, child = CHATBOX_CHILD, interfaceId = 270)
-    player.runClientScript(2046, 0, "$title${nameArray.joinToString("")}", maxItems, *itemArray)
+    player.runClientScript(2046, type, "$title${nameArray.joinToString("")}", maxItems, *itemArray)
 
     terminateAction = closeDialog
     waitReturnValue()

@@ -15,6 +15,7 @@ import gg.rsmod.game.model.collision.CollisionManager
 import gg.rsmod.game.model.combat.NpcCombatDef
 import gg.rsmod.game.model.entity.*
 import gg.rsmod.game.model.instance.InstancedMapAllocator
+import gg.rsmod.game.model.npcdrops.NpcDropTableDef
 import gg.rsmod.game.model.priv.PrivilegeSet
 import gg.rsmod.game.model.queue.QueueTask
 import gg.rsmod.game.model.queue.QueueTaskSet
@@ -575,6 +576,9 @@ class World(val gameContext: GameContext, val devContext: DevContext) {
             npc.stats.setMaxLevel(index, level)
             npc.stats.setCurrentLevel(index, level)
         }
+
+        val dropTableDef = plugins.npcDropTableDefs.getOrDefault(npc.id, null) ?: NpcDropTableDef.DEFAULT
+        npc.dropTableDef = dropTableDef
     }
 
     /**

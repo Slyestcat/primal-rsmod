@@ -32,7 +32,6 @@ dependencies {
 
     testImplementation "junit:junit:$junitVersion"
 
-    runtimeClasspath files('lib/mysql-connector-java-5.1.40.jar')
 }
 
 sourceSets {

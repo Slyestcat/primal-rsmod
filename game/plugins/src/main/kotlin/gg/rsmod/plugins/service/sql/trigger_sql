@@ -1,0 +1,32 @@
+begin
+INSERT INTO primal_rsps.Players (id, username, display_name, emailAddress, position_x, position_y, position_z, privilege, run_energy, display_mode, password_hash, xtea_one, xtea_two, xtea_three, xtea_four)
+SELECT core_members.member_id, core_members.name, core_members.name, core_members.email, '3087', '0', '3497', '0', '100', '0', core_members.members_pass_hash, '679095467', '846558115', '-589447101', '-1665641668'
+FROM primal_forums.core_members
+ON DUPLICATE KEY UPDATE id = VALUES(id);
+
+
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '1', core_members.member_id, '0', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '2', core_members.member_id, '1', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '3', core_members.member_id, '2', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '4', core_members.member_id, '3', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '5', core_members.member_id, '4', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '6', core_members.member_id, '5', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '7', core_members.member_id, '6', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '8', core_members.member_id, '7', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '9', core_members.member_id, '8', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '10', core_members.member_id, '9', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '11', core_members.member_id, '10', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '12', core_members.member_id, '11', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '13', core_members.member_id, '12', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '14', core_members.member_id, '13', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '15', core_members.member_id, '14', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '16', core_members.member_id, '15', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '17', core_members.member_id, '16', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '18', core_members.member_id, '17', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '19', core_members.member_id, '18', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '10', core_members.member_id, '19', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '21', core_members.member_id, '20', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '22', core_members.member_id, '21', '0', '1' FROM primal_forums.core_members;
+INSERT INTO primal_rsps.Skills (id, player_id, skill_id, xp, lvl) SELECT '23', core_members.member_id, '22', '0', '1' FROM primal_forums.core_members;
+
+END

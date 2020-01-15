@@ -12,3 +12,4 @@ import gg.rsmod.game.model.container.ContainerStackType
 val INVENTORY_KEY = ContainerKey("inventory", capacity = 28, stackType = ContainerStackType.NORMAL)
 val EQUIPMENT_KEY = ContainerKey("equipment", capacity = 14, stackType = ContainerStackType.NORMAL)
 val BANK_KEY = ContainerKey("bank", capacity = 800, stackType = ContainerStackType.STACK)
+val GE_RETURN_KEY = ContainerKey("ge_return", capacity = 2, stackType = ContainerStackType.STACK)

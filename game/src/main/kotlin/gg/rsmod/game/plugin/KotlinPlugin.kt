@@ -14,6 +14,7 @@ import gg.rsmod.game.model.container.key.ContainerKey
 import gg.rsmod.game.model.entity.DynamicObject
 import gg.rsmod.game.model.entity.GroundItem
 import gg.rsmod.game.model.entity.Npc
+import gg.rsmod.game.model.npcdrops.NpcDropTableDef
 import gg.rsmod.game.model.shop.PurchasePolicy
 import gg.rsmod.game.model.shop.Shop
 import gg.rsmod.game.model.shop.ShopCurrency
@@ -141,10 +142,13 @@ abstract class KotlinPlugin(private val r: PluginRepository, val world: World, v
      */
     fun spawn_npc(npc: Int, x: Int, z: Int, height: Int = 0, walkRadius: Int = 0, direction: Direction = Direction.SOUTH) {
         val n = Npc(npc, Tile(x, z, height), world)
-        n.respawns = true
-        n.walkRadius = walkRadius
-        n.lastFacingDirection = direction
-        r.npcSpawns.add(n)
+        if(!r.npcSpawns.contains(n)) {
+            n.respawns = true
+            n.walkRadius = walkRadius
+            n.lastFacingDirection = direction
+            r.npcSpawns.add(n)
+        }
+
     }
 
     /**
@@ -179,6 +183,8 @@ abstract class KotlinPlugin(private val r: PluginRepository, val world: World, v
 
         r.bindItem(item, slot + 1, logic)
     }
+
+
 
     /**
      * Invoke [logic] when the [option] option is clicked on an equipment
@@ -347,6 +353,13 @@ abstract class KotlinPlugin(private val r: PluginRepository, val world: World, v
      */
     fun on_player_death(plugin: Plugin.() -> Unit) = r.bindPlayerDeath(plugin)
 
+
+    fun set_drop_table(npcId: Int, def: NpcDropTableDef) {
+        check(!r.npcDropTableDefs.containsKey(npcId)) { "Npc drop table definition has been previous set: $npcId" }
+        r.npcDropTableDefs[npcId] = def
+    }
+
+
     /**
      * Invoked when npc with [Npc.id] of [npc] invokes their death task.
      */
@@ -357,6 +370,8 @@ abstract class KotlinPlugin(private val r: PluginRepository, val world: World, v
      * is de-registered from the world.
      */
     fun on_npc_death(npc: Int, plugin: Plugin.() -> Unit) = r.bindNpcDeath(npc, plugin)
+
+    fun on_npc_death(npc: String, plugin: Plugin.() -> Unit) = r.bindNpcDeath(npc, plugin)
 
     /**
      * Set the combat logic for [npc] and [others], which will override the [set_combat_logic]
@@ -515,6 +530,17 @@ abstract class KotlinPlugin(private val r: PluginRepository, val world: World, v
      * Invoke [plugin] when [item] is used on [npc].
      */
     fun on_item_on_npc(item: Int, npc: Int, plugin: Plugin.() -> Unit) = r.bindItemOnNpc(npc = npc, item = item, plugin = plugin)
+
+    fun on_start_fishing(spotId: Int, plugin: Plugin.() -> Unit) = r.bindOnStartFishing(npc_spot = spotId, plugin = plugin)
+
+    /**
+     * Invoke [plugin] when player catches a fish at a spot
+     */
+    fun on_catch_fish(npc_spot: Int, plugin: Plugin.() -> Unit) = r.bindOnCatchFish(npc_spot = npc_spot, plugin = plugin)
+
+    fun get_all_commands(): ArrayList<String> {
+        return r.get_all_commands()
+    }
 
     companion object {
         private val METADATA_PATH = Paths.get("./plugins", "configs")

@@ -14,9 +14,12 @@ import gg.rsmod.game.model.container.ItemContainer
 import gg.rsmod.game.model.entity.Player
 import gg.rsmod.game.model.interf.DisplayMode
 import gg.rsmod.game.model.item.Item
+import gg.rsmod.game.model.queue.TaskPriority
 import gg.rsmod.game.model.timer.SKULL_ICON_DURATION_TIMER
 import gg.rsmod.game.sync.block.UpdateBlockType
 import gg.rsmod.plugins.api.*
+import gg.rsmod.plugins.content.modules.grandexchange.GEInterface
+import gg.rsmod.plugins.content.modules.grandexchange.GrandExchange
 import gg.rsmod.plugins.service.marketvalue.ItemMarketValueService
 import gg.rsmod.util.BitManipulation
 
@@ -237,8 +240,32 @@ fun Player.openOverlayInterface(displayMode: DisplayMode) {
     write(IfOpenTopMessage(component))
 }
 
+fun Player.sendHintArrow(arrow_type: Int, index_or_x: Int, arrow_y: Int, offset_z: Int) {
+    write(HintArrowMessage(arrow_type = arrow_type, index_or_x = index_or_x, arrow_y = arrow_y, offset_z = offset_z))
+}
+
 fun Player.sendItemContainer(key: Int, items: Array<Item?>) {
     write(UpdateInvFullMessage(containerKey = key, items = items))
+}
+
+fun Player.sendGrandExchangeOffer(slot: Int, state: Int, itemId: Int, price: Int, quantity: Int, quantityFilled: Int, spent: Int) {
+    write(GrandExchangeOfferMessage(slot,state,itemId,price,quantity,quantityFilled,spent))
+}
+
+fun Player.sendCameraShake(camIndex: Int, sinusX: Int, amplitude : Int, sinusY: Int) {
+    write(CameraShakeMessage(camIndex, sinusX, amplitude, sinusY))
+}
+
+fun Player.sendCameraLookAt(sceneX : Int, sceneZ: Int, sceneHeight : Int, param4: Int, param5 : Int) {
+    write(CameraLookAtMessage(sceneX, sceneZ, sceneHeight, param4, param5))
+}
+
+fun Player.sendCameraMoveTo(sceneX : Int, sceneZ: Int, sceneHeight : Int, param4: Int, param5 : Int) {
+    write(CameraMoveToMessage(sceneX, sceneZ, sceneHeight, param4, param5))
+}
+
+fun Player.sendCameraReset() {
+    write(CameraResetMessage())
 }
 
 fun Player.sendItemContainer(interfaceId: Int, component: Int, items: Array<Item?>) {
@@ -506,6 +533,87 @@ fun Player.calculateDeathContainers(): DeathContainers {
     }
 
     return DeathContainers(kept = keptContainer, lost = lostContainer)
+}
+
+fun Player.openGrandExchange() {
+    GEInterface(this).open()
+}
+
+fun Player.closeGrandExchange() {
+    GEInterface(this).close()
+}
+
+/**
+ * Triggered when the player clicks buy / sell within the grand exchange.
+ * @param type      0 = buy 1 = sell
+ */
+fun Player.openGrandExchangeOffer(slot: Int, type: Int) {
+    GEInterface(this).openOffer(slot, type)
+}
+
+fun Player.closeGrandExchangeOffer() {
+    GEInterface(this).closeOffer(this.getVarbit(GrandExchange.VARBIT_OFFER_CREATION_TYPE))
+}
+
+fun Player.reselectGrandExchangeOfferItem() {
+    if(this.getVarbit(GrandExchange.VARBIT_OFFER_CREATION_TYPE) == 0) {
+        GEInterface(this).clearOfferItem()
+        this.queue(TaskPriority.WEAK) { GEInterface(this.player).buyItemSearch(this) }
+    } else {
+        GEInterface(this).clearOfferItem()
+    }
+}
+
+fun Player.changeGEQuantity(delta: Int, max: Int = -1) {
+    var quantity = getVarp(GrandExchange.VARP_QUANITY)
+    val price = getVarp(GrandExchange.VARP_PRICE)
+
+    var skipAdd = false
+
+    if(quantity == 0 || price == 0) {
+        return
+    }
+
+    when(getVarbit(GrandExchange.VARBIT_OFFER_CREATION_TYPE)) {
+        0 -> {
+            if(quantity+delta <= 0) { return }
+        }
+
+        1 -> {
+            if(quantity+delta == Int.MIN_VALUE || quantity+delta >= 0) { return }
+            if((max > -1 && quantity+delta > Int.MIN_VALUE+max) || delta == 1000) {
+                quantity = Int.MIN_VALUE+max
+                skipAdd = true
+            }
+        }
+    }
+
+    if(!skipAdd) { quantity+=delta }
+
+    setVarbit(GrandExchange.VARBIT_QUANITY, quantity)
+    setVarp(GrandExchange.VARP_QUANITY, quantity)
+}
+
+fun Player.changeGEPrice(delta: Int) {
+    val current_quantity = getVarp(GrandExchange.VARP_QUANITY)
+    var current_price = getVarp(GrandExchange.VARP_PRICE)
+
+    if(current_quantity == 0 || current_price == 0) {
+        return
+    }
+
+    if(current_price+delta <= 0) {
+        return
+    }
+
+    if(current_price > 20 && current_price%20 != 0) {
+        if(delta > 0) { current_price-- }
+        else { current_price++ }
+    }
+
+    current_price += delta
+    setVarp(GrandExchange.VARP_PRICE, current_price)
+    setVarbit(GrandExchange.VARBIT_PRICE, current_price)
 }
 
 // Note: this does not take ground items, that may belong to the player, into

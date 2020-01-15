@@ -10,6 +10,7 @@ import gg.rsmod.game.model.combat.AttackStyle
 import gg.rsmod.game.model.combat.CombatClass
 import gg.rsmod.game.model.combat.CombatStyle
 import gg.rsmod.game.model.combat.NpcCombatDef
+import gg.rsmod.game.model.npcdrops.NpcDropTableDef
 import gg.rsmod.game.sync.block.UpdateBlockType
 
 /**
@@ -57,6 +58,11 @@ class Npc private constructor(val id: Int, world: World, val spawnTile: Tile) : 
      * The current hitpoints the npc has.
      */
     private var hitpoints = 10
+
+    /**
+     * The [NpcDropTableDef] assigned to our npc.
+     */
+    lateinit var dropTableDef: NpcDropTableDef
 
     /**
      * The [NpcCombatDef] assigned to our npc. This can change at any point to
@@ -137,6 +143,7 @@ class Npc private constructor(val id: Int, world: World, val spawnTile: Tile) : 
             timerCycle()
         }
         hitsCycle()
+        //updateLastTile()
     }
 
     /**

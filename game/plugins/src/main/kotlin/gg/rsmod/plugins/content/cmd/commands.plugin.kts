@@ -12,6 +12,7 @@ import gg.rsmod.plugins.content.combat.formula.RangedCombatFormula
 import gg.rsmod.plugins.content.combat.getCombatTarget
 import gg.rsmod.plugins.content.inter.bank.openBank
 import gg.rsmod.plugins.content.magic.MagicSpells
+import gg.rsmod.plugins.service.discord.commands.Registry
 import java.text.DecimalFormat
 
 on_command("max") {
@@ -327,6 +328,13 @@ on_command("clip", Privilege.ADMIN_POWER) {
         val projectile = if (projectileBlocked) "<col=801700>projectiles blocked" else "<col=178000>projectiles allowed"
         player.message("$dir: $walkable - $projectile")
     }
+}
+
+on_command("discordreload", Privilege.ADMIN_POWER) {
+    Registry().loadCommands()
+    player.message("Discord commands reloaded")
+
+    //getChannel(ChannelData.LOGS).sendMessage( "${this.player.username}Reloaded Plugins")
 }
 
 fun tryWithUsage(player: Player, args: Array<String>, failMessage: String, tryUnit: Function1<Array<String>, Unit>) {

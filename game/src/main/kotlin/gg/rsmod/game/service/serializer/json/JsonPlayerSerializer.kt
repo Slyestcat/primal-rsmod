@@ -1,6 +1,6 @@
 package gg.rsmod.game.service.serializer.json
 
-//import org.mindrot.jbcrypt.BCrypt
+
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.gson.Gson
@@ -22,9 +22,6 @@ import mu.KLogging
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
 import java.util.*
 
 
@@ -46,33 +43,10 @@ class JsonPlayerSerializer : PlayerSerializerService() {
         }
     }
 
-    private var conn: Connection? = null
-
-    fun connectAccountDatabase () {
-        /*
-            connects to the SQL database for the accounts
-         */
-        val databaseUsername = "account_svc"
-        val databasePassword = "'k_?bHvv327!vG=,<"
-        val databaseString = "jdbc:mysql://165.22.134.196:3306/account_svc?relaxAutoCommit=true"
-        val connectionProps = Properties()
-        connectionProps["user"] = databaseUsername
-        connectionProps["password"] = databasePassword
-        try {
-            Class.forName("com.mysql.jdbc.Driver")
-            conn = DriverManager.getConnection(databaseString, connectionProps)
-        } catch (ex: SQLException) {
-            // handle any errors
-            ex.printStackTrace()
-        } catch (ex: Exception) {
-            // handle any errors
-            ex.printStackTrace()
-        }
-    }
     override fun loadClientData(client: Client, request: LoginRequest): PlayerLoadResult {
         val save = path.resolve(client.loginUsername)
         if (!Files.exists(save)) {
-            configureNewPlayer(client, request) //TODO display error that account has not been created please visit website
+            configureNewPlayer(client, request)
             client.uid = PlayerUID(client.loginUsername)
             saveClientData(client)
             return PlayerLoadResult.NEW_ACCOUNT
@@ -81,7 +55,7 @@ class JsonPlayerSerializer : PlayerSerializerService() {
             val world = client.world
             val reader = Files.newBufferedReader(save)
             val json = Gson()
-            val data = json.fromJson<JsonPlayerSaveData>(reader, JsonPlayerSaveData::class.java) //TODO switch this function to pull data from SQL databse
+            val data = json.fromJson<JsonPlayerSaveData>(reader, JsonPlayerSaveData::class.java)
             reader.close()
 
             if (!request.reconnecting) {
@@ -98,7 +72,7 @@ class JsonPlayerSerializer : PlayerSerializerService() {
                  * If the [request] is a [LoginRequest.reconnecting] request, we
                  * verify that the login xteas match from our previous session.
                  */
-                if (!Arrays.equals(data.previousXteas, request.xteaKeys)) { //TODO have xteas request pull from SQL database
+                if (!Arrays.equals(data.previousXteas, request.xteaKeys)) {
                     return PlayerLoadResult.INVALID_RECONNECTION
                 }
             }
@@ -157,7 +131,7 @@ class JsonPlayerSerializer : PlayerSerializerService() {
 
 
     override fun saveClientData(client: Client): Boolean {
-        connectAccountDatabase() //Makes database connection.
+
         val data = JsonPlayerSaveData(passwordHash = client.passwordHash, username = client.loginUsername, previousXteas = client.currentXteaKeys,
                 displayName = client.username, x = client.tile.x, z = client.tile.z, height = client.tile.height,
                 privilege = client.privilege.id, runEnergy = client.runEnergy, displayMode = client.interfaces.displayMode.id,
@@ -168,44 +142,6 @@ class JsonPlayerSerializer : PlayerSerializerService() {
         val json = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
         json.toJson(data, writer)
         writer.close()
-
-
-        val passwordHash = client.passwordHash
-        val username = client.loginUsername
-        val previousXteas = client.currentXteaKeys
-        val displayName = client.username
-        val x  = client.tile.x
-        val z = client.tile.z
-        val height = client.tile.height
-        val privilege = client.privilege.id
-        val runEnergy = client.runEnergy
-        val displayMode = client.interfaces.displayMode.id
-        val appearance = json.toJson(client.getPersistentAppearance())
-        val skill = json.toJson(client.getPersistentSkills())
-        val itemContainers = json.toJson(client.getPersistentContainers())
-        val attributes = json.toJson(client.attr.toPersistentMap())
-        val timers = json.toJson(client.timers.toPersistentTimers())
-        val varps = json.toJson(client.varps.getAll().filter { it.state != 0 })
-        /*
-            Changes the data from values to strings for easier database queries.
-         */
-
-        val stringNew = "INSERT INTO account (passwordHash, username, previousXteas, displayName, x, z," +
-                " height, runEnergy, displayMode, privilege, appearance, skills, itemContainers, attributes, timers, varps)" +
-                " VALUES ('$passwordHash', '$username', '$previousXteas', '$displayName', '$x', '$z', " +
-                "'$height', '$runEnergy', '$displayMode', '$privilege', '$appearance', '$skill', '$itemContainers', '$attributes', '$timers', '$varps') ON DUPLICATE KEY UPDATE " +
-                "passwordHash = '$passwordHash', username = '$username', previousXteas = '$previousXteas'," +
-                "displayName = '$displayName', x = '$x', z = '$z', height = '$height', runEnergy = '$runEnergy'," +
-                "displayMode = '$displayMode', privilege = '$privilege', appearance = '$appearance', skills = '$skill', itemContainers = '$itemContainers', " +
-                "attributes = '$attributes', timers = '$timers', varps = '$varps'"
-        /*
-            Database save/update query for user.
-         */
-
-        with(conn){
-                this?.createStatement()?.execute(stringNew)
-                this?.commit() //executes the SQL query
-        }
 
         return true
     }

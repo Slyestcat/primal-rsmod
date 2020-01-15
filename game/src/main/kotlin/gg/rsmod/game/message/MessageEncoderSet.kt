@@ -56,10 +56,16 @@ class MessageEncoderSet {
         put(MapProjAnimEncoder(), MapProjAnimMessage::class.java)
         put(SynthSoundEncoder(), SynthSoundMessage::class.java)
         put(SoundAreaEncoder(), SoundAreaMessage::class.java)
+        put(GrandExchangeOfferEncoder(), GrandExchangeOfferMessage::class.java)
+        put(HintArrowEncoder(), HintArrowMessage::class.java)
         put(MidiSongEncoder(), MidiSongMessage::class.java)
         put(OnDialogAbortEncoder(), TriggerOnDialogAbortMessage::class.java)
         put(UpdateRebootTimerEncoder(), UpdateRebootTimerMessage::class.java)
         put(MapAnimEncoder(), MapAnimMessage::class.java)
+        put(CameraShakeEncoder(), CameraShakeMessage::class.java)
+        put(CameraResetEncoder(), CameraResetMessage::class.java)
+        put(CamLookAtEncoder(), CameraLookAtMessage::class.java)
+        put(CamMoveToEncoder(), CameraMoveToMessage::class.java)
     }
 
     private fun <T : Message> put(encoder: MessageEncoder<T>, message: Class<out T>) {

@@ -56,7 +56,7 @@ val CURRENT_SHOP_ATTR = AttributeKey<Shop>()
 /**
  * The [Pawn] which another pawn wants to initiate combat with, whether they meet
  * the criteria to attack or not (including being in attack range).
- */
+*/
 val COMBAT_TARGET_FOCUS_ATTR = AttributeKey<WeakReference<Pawn>>()
 
 /**
@@ -192,3 +192,7 @@ val LEVEL_UP_INCREMENT = AttributeKey<Int>()
  * The previous skill XP of the latest level up.
  */
 val LEVEL_UP_OLD_XP = AttributeKey<Double>()
+
+val TUTORIAL_STARTED_FISHING = AttributeKey<Int>()
+
+val TUTORIAL_CATCH_FISH = AttributeKey<Int>()

@@ -18,6 +18,7 @@ out-packets:
       - name: tile
         type: BYTE
 
+
   - message: gg.rsmod.game.message.impl.UpdateRebootTimerMessage
     type: FIXED
     opcode: 72
@@ -28,6 +29,21 @@ out-packets:
   - message: gg.rsmod.game.message.impl.TriggerOnDialogAbortMessage
     type: FIXED
     opcode: 52
+
+  - message: gg.rsmod.game.message.impl.HintArrowMessage
+    type : FIXED
+    opcode : 72
+    structure:
+      - name: arrow_type
+        sign: UNSIGNED
+        type: BYTE
+      - name: index_or_x
+        type: SHORT
+      - name: arrow_y
+        type: SHORT
+      - name: offset_z
+        sign: UNSIGNED
+        type: BYTE
 
   - message: gg.rsmod.game.message.impl.SetOpPlayerMessage
     type: VARIABLE_BYTE
@@ -1547,3 +1563,65 @@ in-packets:
     opcode: 99
     length: 7
     ignore: true
+
+  - message: gg.rsmod.game.message.impl.CameraShakeMessage
+    type: FIXED
+    opcode: 39
+    length: 4
+    ignore: true
+    structure:
+      - name: cam_index
+        sign: UNSIGNED
+        type: BYTE
+      - name: sinus_x
+        sign: UNSIGNED
+        type: BYTE
+      - name: amplitude
+        sign: UNSIGNED
+        type: BYTE
+      - name: sinus_y
+        sign: UNSIGNED
+        type: BYTE
+
+  - message: gg.rsmod.game.message.impl.CameraResetMessage
+    type: FIXED
+    opcode: 2
+
+  - message: gg.rsmod.game.message.impl.CameraMoveToMessage
+    type: FIXED
+    opcode: 75
+    structure:
+      - name: scene_x
+        sign: UNSIGNED
+        type: BYTE
+      - name: scene_z
+        sign: UNSIGNED
+        type: BYTE
+      - name: height
+        type: SHORT
+      - name: param4
+        sign: UNSIGNED
+        type: BYTE
+      - name: param5
+        sign: UNSIGNED
+        type: BYTE
+
+  - message: gg.rsmod.game.message.impl.CameraLookAtMessage
+    type: FIXED
+    opcode: 83
+    length: 6
+    structure:
+      - name: scene_x
+        sign: UNSIGNED
+        type: BYTE
+      - name: scene_z
+        sign: UNSIGNED
+        type: BYTE
+      - name: height
+        type: SHORT
+      - name: param4
+        sign: UNSIGNED
+        type: BYTE
+      - name: param5
+        sign: UNSIGNED
+        type: BYTE

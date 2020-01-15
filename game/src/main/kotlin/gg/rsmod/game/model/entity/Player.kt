@@ -47,10 +47,20 @@ open class Player(world: World) : Pawn(world) {
      */
     var username = ""
 
+    var slayerPoints = 0
+
+    var slayerTasksDone = 0
+
+
+
     /**
      * @see Privilege
      */
     var privilege = Privilege.DEFAULT
+
+    lateinit var accessToken: String
+
+    lateinit var refreshToken: String
 
     /**
      * The base region [Coordinate] is the most bottom-left (south-west) tile where
@@ -180,6 +190,8 @@ open class Player(world: World) : Pawn(world) {
 
     var runEnergy = 100.0
 
+    var hitpoints = getCurrentHp()
+
     /**
      * The current combat level. This must be set externally by a login plugin
      * that is used on whatever revision you want.
@@ -237,7 +249,6 @@ open class Player(world: World) : Pawn(world) {
         movementQueue.clear()
         lock = LockState.DELAY_ACTIONS
 
-        lastTile = Tile(tile)
         moveTo(movement.finalDestination)
 
         forceMove(movement)
@@ -366,6 +377,7 @@ open class Player(world: World) : Pawn(world) {
      * conditions if any logic may modify other [Pawn]s.
      */
     fun postCycle() {
+        //updateLastTile()
         /*
          * Flush the channel at the end.
          */
