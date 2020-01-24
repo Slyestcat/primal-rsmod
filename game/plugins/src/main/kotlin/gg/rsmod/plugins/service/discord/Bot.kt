@@ -24,7 +24,7 @@ class Bot : Service {
 
             builder.setStatus(OnlineStatus.ONLINE)
             builder.addEventListener(ListenerHandler())
-            builder.setGame(Game.of(Game.GameType.DEFAULT, "Primal NPC | ::help"))
+            builder.setGame(Game.of(Game.GameType.DEFAULT, "Primal | ::help"))
             builder.setToken("NjY2NjY0MjU0MDAyMjk4OTA0.Xh3dvw.F_Wum3nrze-bREA-l-0ky6aeI2g")
             builder.buildBlocking()
 

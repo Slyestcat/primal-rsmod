@@ -70,7 +70,7 @@ class InstancedMapAllocator {
             InstancedMap(Area(x, z, x + chunks.regionSize * Chunk.REGION_SIZE, z + chunks.regionSize * Chunk.REGION_SIZE), chunks,
                     configs.exitTile, configs.owner, configs.attributes)
 
-    private fun deallocate(world: World, map: InstancedMap) {
+    fun deallocate(world: World, map: InstancedMap) {
         if (maps.remove(map)) {
             removeCollision(world, map)
             world.removeAll(map.area)

@@ -4,6 +4,10 @@ on_npc_option(npc = Npcs.RICHARD_2200, option = "talk-to") {
     player.queue { chat(this) }
 }
 
+on_npc_option(npc = Npcs.RICHARD_2200, option = "trade") {
+    player.queue { trade(this) }
+}
+
 suspend fun chat(it: QueueTask) {
     it.chatNpc("Hello there, are you interested in buying one of my<br>special capes?", animation = 568)
     options(it)
@@ -24,6 +28,10 @@ suspend fun options(it: QueueTask) {
         2 -> open_shop(it.player)
         3 -> no_thanks(it)
     }
+}
+
+suspend fun trade(it: QueueTask) {
+    it.player.openShop("Richard's Wilderness Cape Shop.")
 }
 
 fun open_shop(p: Player) {

@@ -48,7 +48,7 @@ arrayOf(Npcs.EMBLEM_TRADER, Npcs.EMBLEM_TRADER_316).forEach { npc ->
 
 suspend fun chat(it: QueueTask) {
     it.chatNpc("Hello, wanderer.", animation = 588)
-    it.chatNpc("Don't suppose you've come across any strange...<br>emblems or artefacts along your journey?", animation = 589)
+    it.chatNpc("Don't suppose you've come across any strange...<br>emblems or artifacts along your journey?", animation = 589)
     it.chatPlayer("Not that I've seen.", animation = 588)
     it.chatNpc("If you do, please do let me know. I'll reward you<br>handsomely.", animation = 589)
     options(it)

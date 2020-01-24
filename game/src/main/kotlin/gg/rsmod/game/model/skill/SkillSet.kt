@@ -1,5 +1,7 @@
 package gg.rsmod.game.model.skill
 
+
+
 /**
  * Holds all [Skill] data for a player.
  *
@@ -109,6 +111,22 @@ class SkillSet(val maxSkills: Int) {
         }
     }
 
+    fun boostCurrentLevel(skill: Int, value: Int, capValue: Int = 0) {
+        check(capValue == 0 || capValue < 0 && value < 0 || capValue > 0 && value >= 0) {
+            "Cap value and alter value must always be the same signum (+ or -)."
+        }
+        val altered = when {
+            capValue > 0 -> Math.min(getCurrentLevel(skill) + value, getMaxLevel(skill) + capValue)
+            capValue < 0 -> Math.max(getCurrentLevel(skill) + value, getMaxLevel(skill) + capValue)
+            else -> Math.min(getMaxLevel(skill), getCurrentLevel(skill) + value)
+        }
+        val newLevel = Math.max(0, altered)
+        val curLevel = getCurrentLevel(skill)
+
+        if (newLevel > curLevel) {
+            setCurrentLevel(skill = skill, level = newLevel)
+        }
+    }
     /**
      * Decrease the level of [skill].
      *
@@ -140,6 +158,22 @@ class SkillSet(val maxSkills: Int) {
      */
     fun restore(skill: Int) {
         setCurrentLevel(skill, getMaxLevel(skill))
+    }
+
+
+
+    fun replenishStats() {
+        skills.forEach { skill ->
+            if (skill.id == 5)
+                return
+            if (skill.id == 3)
+                return
+            if (getCurrentLevel(skill.id) > getMaxLevel(skill.id)) {
+                setCurrentLevel(skill.id, getCurrentLevel(skill.id) -1)
+            } else if (getCurrentLevel(skill.id) < getMaxLevel(skill.id)) {
+                setCurrentLevel(skill.id, getCurrentLevel(skill.id) + 1)
+            }
+        }
     }
 
     /**

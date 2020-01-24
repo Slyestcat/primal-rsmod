@@ -34,7 +34,7 @@ abstract class PlayerSerializerService : Service {
     }
 
     fun configureNewPlayer(client: Client, request: LoginRequest) {
-        client.attr.put(NEW_ACCOUNT_ATTR, true) //TODO force account creation on the website, need to configure the website to accept the same password scheme. Maybe IPB forums?
+        client.attr.put(NEW_ACCOUNT_ATTR, true)
 
         client.passwordHash = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(10, request.password.toCharArray())
         client.tile = startTile

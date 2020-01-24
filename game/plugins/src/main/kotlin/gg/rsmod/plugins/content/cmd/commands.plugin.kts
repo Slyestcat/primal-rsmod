@@ -59,7 +59,7 @@ on_command("home", Privilege.ADMIN_POWER) {
     player.moveTo(home)
 }
 
-on_command("obank", Privilege.ADMIN_POWER) {
+on_command("bank", Privilege.ADMIN_POWER) {
     player.openBank()
 }
 
@@ -136,7 +136,7 @@ on_command("song", Privilege.ADMIN_POWER) {
     }
 }
 
-on_command("infrun", Privilege.ADMIN_POWER) {
+on_command("infrun", Privilege.PREMIUM_POWER) {
     player.toggleStorageBit(INFINITE_VARS_STORAGE, InfiniteVarsType.RUN)
     player.message("Infinite run: ${if (!player.hasStorageBit(INFINITE_VARS_STORAGE, InfiniteVarsType.RUN)) "<col=801700>disabled</col>" else "<col=178000>enabled</col>"}")
 }
@@ -194,8 +194,9 @@ on_command("removeobj", Privilege.ADMIN_POWER) {
 on_command("master", Privilege.ADMIN_POWER) {
     for (i in 0 until player.getSkills().maxSkills) {
         player.getSkills().setBaseLevel(i, 99)
+        player.getSkills().setBaseXp(i, 13040000.00)
     }
-    player.calculateAndSetCombatLevel()
+    //player.calculateAndSetCombatLevel()
 }
 
 on_command("reset", Privilege.ADMIN_POWER) {
@@ -334,7 +335,16 @@ on_command("discordreload", Privilege.ADMIN_POWER) {
     Registry().loadCommands()
     player.message("Discord commands reloaded")
 
-    //getChannel(ChannelData.LOGS).sendMessage( "${this.player.username}Reloaded Plugins")
+}
+
+on_command("setrank", Privilege.OWNER_POWER) {
+    val args = player.getCommandArgs()
+    tryWithUsage(player, args, "Invalid format! Example of proper command <col=801700>::setrank 1</col>") { values ->
+        val component = values[0].toInt()
+
+
+    }
+
 }
 
 fun tryWithUsage(player: Player, args: Array<String>, failMessage: String, tryUnit: Function1<Array<String>, Unit>) {

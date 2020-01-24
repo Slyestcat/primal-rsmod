@@ -70,3 +70,12 @@ val FOOD_DELAY = TimerKey()
  * Timer key for delay in between eating "combo" food.
  */
 val COMBO_FOOD_DELAY = TimerKey()
+
+/**
+ * Timer key for potion degrade
+ */
+val POTION = TimerKey()
+
+/**
+ * STAT REPLENISH
+ */

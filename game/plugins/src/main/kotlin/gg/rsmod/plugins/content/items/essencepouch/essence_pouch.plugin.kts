@@ -1,5 +1,6 @@
 package gg.rsmod.plugins.content.items.essencepouch
 
+
 /**
  * The set of essence pouch definitions
  */

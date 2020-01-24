@@ -1,6 +1,7 @@
 package gg.rsmod.plugins.content.items.food
 
 import gg.rsmod.plugins.api.cfg.Items
+import gg.rsmod.plugins.api.Skills
 
 enum class Food(val item: Int, val heal: Int = 0, val overheal: Boolean = false,
                 val replacement: Int = -1, val tickDelay: Int = 3,
@@ -36,6 +37,7 @@ enum class Food(val item: Int, val heal: Int = 0, val overheal: Boolean = false,
      * Pastries.
      */
     BREAD(item = Items.BREAD, heal = 5);
+
 
     companion object {
         val values = enumValues<Food>()
